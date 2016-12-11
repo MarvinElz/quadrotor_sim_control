@@ -187,7 +187,3 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-add_executable( Sim_Control src/Sim_Control.cpp)
-target_link_libraries(Sim_Control ${catkin_LIBRARIES})
-#add_dependencies( Sim_Control sensor_msgs geometry_msgs )
