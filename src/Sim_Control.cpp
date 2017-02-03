@@ -6,6 +6,8 @@
 bool run = true;
 bool running = false;
 
+ros::ServiceClient reset_client;
+
 void callback_rc_signal( const sensor_msgs::Joy::Ptr& msg )
 {     
    if( msg->buttons[0]){
@@ -18,12 +20,21 @@ void callback_rc_signal( const sensor_msgs::Joy::Ptr& msg )
 	if( running )
 		ROS_INFO("STOP");
    }	
+	if( msg->buttons[3] ){
+		std_srvs::Empty srv;
+		reset_client.call(srv);
+		ROS_INFO("Reset to Save Position");
+	}
 }
 
 int main( int argc, char * argv[] ){
 
    ros::init(argc, argv, "Sim_Control");
    ros::NodeHandle nh("Sim_Control");
+
+	ROS_INFO("Starte Simulationskontrolle");
+
+	reset_client = nh.serviceClient<std_srvs::Empty>("/Dynamics/dynamics_resetPosition");
 
    ros::ServiceClient dynamics_client = nh.serviceClient<std_srvs::SetBool>("/Dynamics/dynamics_prop");
    ros::ServiceClient control_client = nh.serviceClient<std_srvs::SetBool>("/Controller/controller_prop");
@@ -32,25 +43,25 @@ int main( int argc, char * argv[] ){
 
    ros::Rate loop_rate(200);
 
-   while(ros::ok())
-   {	
-	std_srvs::SetBool srv;
-	if( run ){
-		if( !running ){
-			srv.request.data = true;
-			running = true;
+	while(ros::ok())
+  {	
+		std_srvs::SetBool srv;
+		if( run ){
+			if( !running ){
+				srv.request.data = true;
+				running = true;
+			}else{
+				srv.request.data = false;				
+			}			
+			dynamics_client.call(srv);
+      control_client.call(srv);
 		}else{
-			srv.request.data = false;				
-		}		
-		dynamics_client.call(srv);
-      		control_client.call(srv);
-	}else{
-		running = false;
-	}	      	
-      	ros::spinOnce();
-      	loop_rate.sleep();
-   }
+			running = false;
+		}		      	
+		ros::spinOnce();
+		loop_rate.sleep();
+  }
 
-   ros::spin();
-   return 0;
+  ros::spin();
+  return 0;
 } 
