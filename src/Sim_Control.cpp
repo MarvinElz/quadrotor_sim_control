@@ -1,4 +1,10 @@
 #include "ros/ros.h"
+
+// for Pose Reset
+#include "brics_actuator/JointPositions.h"
+#include "geometry_msgs/Twist.h"
+#include "youbot_arm_model/youbot_joints.h"
+
 #include "std_srvs/Empty.h"
 #include "sensor_msgs/Joy.h"
 #include "std_srvs/SetBool.h"
@@ -6,7 +12,44 @@
 bool run = true;
 bool running = false;
 
+// Publisher für die Gelenkwinkel
+ros::Publisher pub_joint;
+// Publisher für die Geschwindigkeit der Plattform
+ros::Publisher pub_base;
+
 ros::ServiceClient reset_client;
+
+void stopMovement(){
+	geometry_msgs::Twist msg_base;
+	brics_actuator::JointPositions msg_joints;
+
+	msg_base.linear.x  = 0.0f;
+	msg_base.linear.y  = 0.0f;
+	msg_base.linear.z  = 0.0f;
+	msg_base.angular.x = 0.0f;
+	msg_base.angular.y = 0.0f;
+	msg_base.angular.z = 0.0f; 
+
+	pub_base.publish(msg_base); 
+
+	ros::Time time_now = ros::Time::now();
+	for( int i = 0; i <= 4; i++ ){
+		brics_actuator::JointValue jv;
+		jv.timeStamp = time_now;        
+		jv.joint_uri = joint_names[i];
+		jv.unit = "rad";
+		jv.value = joint_offsets[i];	// alles zu 0 setzen
+
+		msg_joints.positions.push_back(jv);
+	}
+	brics_actuator::Poison poison;
+	poison.originator   = "";   // what?
+	poison.description  = "";   // what?
+	poison.qos          = 1.0f; // right?
+	msg_joints.poisonStamp = poison;
+
+	pub_joint.publish( msg_joints );
+}
 
 void callback_rc_signal( const sensor_msgs::Joy::Ptr& msg )
 {     
@@ -23,28 +66,32 @@ void callback_rc_signal( const sensor_msgs::Joy::Ptr& msg )
 	if( msg->buttons[3] ){
 		std_srvs::Empty srv;
 		reset_client.call(srv);
-		ROS_INFO("Reset to Save Position");
+		ROS_INFO("Reset to Save Position + Disable all Movement");
+		stopMovement();
 	}
 }
 
 int main( int argc, char * argv[] ){
 
-   ros::init(argc, argv, "Sim_Control");
-   ros::NodeHandle nh("Sim_Control");
+	ros::init(argc, argv, "Sim_Control");
+	ros::NodeHandle nh("Sim_Control");
 
 	ROS_INFO("Starte Simulationskontrolle");
 
 	reset_client = nh.serviceClient<std_srvs::Empty>("/Dynamics/dynamics_resetPosition");
 
-   ros::ServiceClient dynamics_client = nh.serviceClient<std_srvs::SetBool>("/Dynamics/dynamics_prop");
-   ros::ServiceClient control_client = nh.serviceClient<std_srvs::SetBool>("/Controller/controller_prop");
+	ros::ServiceClient dynamics_client = nh.serviceClient<std_srvs::SetBool>("/Dynamics/dynamics_prop");
+	ros::ServiceClient control_client = nh.serviceClient<std_srvs::SetBool>("/Controller/controller_prop");
 
-   ros::Subscriber sub_Signal = nh.subscribe( "/joy", 100, callback_rc_signal);
+	ros::Subscriber sub_Signal = nh.subscribe( "/joy", 100, callback_rc_signal);
 
-   ros::Rate loop_rate(200);
+	pub_joint = nh.advertise<brics_actuator::JointPositions>("/arm_1/arm_controller/position_command", 100);
+	pub_base  = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+
+	ros::Rate loop_rate(200);
 
 	while(ros::ok())
-  {	
+	{	
 		std_srvs::SetBool srv;
 		if( run ){
 			if( !running ){

@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   quadrotor_dynamics
   roscpp
   std_msgs
+  youbot_arm_model
 )
 
 ## System dependencies are found with CMake's conventions
@@ -116,6 +117,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${youbot_arm_model}
 )
 
 ## Declare a C++ library
@@ -190,4 +192,4 @@ include_directories(
 
 add_executable( Sim_Control src/Sim_Control.cpp)
 target_link_libraries(Sim_Control ${catkin_LIBRARIES})
-#add_dependencies( Sim_Control sensor_msgs geometry_msgs )
+#add_dependencies( Sim_Control sensor_msgs geometry_msgs youbot_arm_model)
