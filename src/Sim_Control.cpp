@@ -21,7 +21,6 @@ ros::ServiceClient reset_client;
 
 void stopMovement(){
 	geometry_msgs::Twist msg_base;
-	brics_actuator::JointPositions msg_joints;
 
 	msg_base.linear.x  = 0.0f;
 	msg_base.linear.y  = 0.0f;
@@ -31,7 +30,8 @@ void stopMovement(){
 	msg_base.angular.z = 0.0f; 
 
 	pub_base.publish(msg_base); 
-
+/*	
+	brics_actuator::JointPositions msg_joints;
 	ros::Time time_now = ros::Time::now();
 	for( int i = 0; i <= 4; i++ ){
 		brics_actuator::JointValue jv;
@@ -49,20 +49,23 @@ void stopMovement(){
 	msg_joints.poisonStamp = poison;
 
 	pub_joint.publish( msg_joints );
+*/
 }
 
 void callback_rc_signal( const sensor_msgs::Joy::Ptr& msg )
 {     
-   if( msg->buttons[0]){
-	run = true;
-	if( !running )
-		ROS_INFO("START");
-   }
-   if( msg->buttons[1]){
-	run = false;	
-	if( running )
-		ROS_INFO("STOP");
-   }	
+	if( msg->buttons[0]){
+		run = true;
+		if( !running )
+			ROS_INFO("START");
+	}
+	if( msg->buttons[1]){
+		run = false;	
+		if( running ){
+			ROS_INFO("STOP");
+			stopMovement();
+		}
+	}	
 	if( msg->buttons[3] ){
 		std_srvs::Empty srv;
 		reset_client.call(srv);
