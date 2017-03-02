@@ -9,7 +9,7 @@
 #include "sensor_msgs/Joy.h"
 #include "std_srvs/SetBool.h"
 
-bool run = true;
+bool run = false;
 bool running = false;
 
 // Publisher für die Gelenkwinkel

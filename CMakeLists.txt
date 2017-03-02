@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   quadrotor_dynamics
   roscpp
   std_msgs
+	roslaunch
   youbot_arm_model
 )
 
