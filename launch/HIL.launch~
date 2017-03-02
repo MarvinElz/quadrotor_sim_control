@@ -16,7 +16,7 @@
 	
 	<node name="Interface" pkg="quadrotor_youbot_interface" type="Interface" output="screen">
 		<param name="logging" type="bool" value="true"/>
-		<param name="filePath" type="string" value="/home/robo/Desktop/log_IST.txt"/>
+		<param name="filePathIST" type="string" value="/home/robo/Desktop/log_IST.txt"/>
 		<rosparam command="load" file="$(find quadrotor_youbot_interface)/params/params.yaml"/>
 	</node>
 	
