@@ -69,8 +69,10 @@ void callback_rc_signal( const sensor_msgs::Joy::Ptr& msg )
 	if( msg->buttons[3] ){
 		std_srvs::Empty srv;
 		reset_client.call(srv);
+		// vielleicht hier auch Regler zurücksetzen
 		ROS_INFO("Reset to Save Position + Disable all Movement");
 		stopMovement();
+		running = false;
 	}
 }
 
