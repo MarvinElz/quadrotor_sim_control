@@ -6,17 +6,17 @@
 
 	<node name="Controller" pkg="quadrotor_control" type="Controller" output="screen">
 		<rosparam command="load" file="$(find quadrotor_control)/params/Regelparameter.yaml"/>
-		<rosparam command="load" file="$(find quadrotor_control)/params/params_ps3.yaml"/>
-		<!-- <rosparam command="load" file="$(find quadrotor_control)/params/params_xbox360.yaml" />'	-->
+		<!-- <rosparam command="load" file="$(find quadrotor_control)/params/params_ps3.yaml"/> -->
+		<rosparam command="load" file="$(find quadrotor_control)/params/params_xbox360.yaml" />
 
-		<param name="logging" type="bool" value="true"/>		
-		<param name="filePathSOLL" type="string" value="/home/robo/Desktop/log_SOLL.txt"/>
+		<param name="logging" type="bool" value="false"/>		
+		<param name="filePathSOLL" type="string" value="/home/youbot/Desktop/log_SOLL.txt"/>
 	</node>
 
 	
 	<node name="Interface" pkg="quadrotor_youbot_interface" type="Interface" output="screen">
 		<param name="logging" type="bool" value="true"/>
-		<param name="filePathIST" type="string" value="/home/robo/Desktop/log_IST.txt"/>
+		<param name="filePathIST" type="string" value="/home/youbot/Desktop/log_IST.txt"/>
 		<rosparam command="load" file="$(find quadrotor_youbot_interface)/params/params.yaml"/>
 	</node>
 	
