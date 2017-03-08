@@ -12,7 +12,16 @@
 bool run = false;
 bool running = false;
 
-ros::Time last;
+#define LOGGING
+#ifdef LOGGING
+	#include <fstream>
+	using namespace std;
+	ofstream logFile;
+	ros::Time last;
+	ros::Time start;
+#endif
+
+
 
 // Publisher für die Gelenkwinkel
 ros::Publisher pub_joint;
@@ -95,7 +104,17 @@ int main( int argc, char * argv[] ){
 	pub_joint = nh.advertise<brics_actuator::JointPositions>("/arm_1/arm_controller/position_command", 100);
 	pub_base  = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
 
-	last = ros::Time::now();
+	#ifdef LOGGING
+		char filePathName[] = "/home/youbot/Desktop/logDT.txt";
+		logFile.open(filePathName); 
+		if(!logFile.is_open()){
+			ROS_ERROR("Logfile: '%s' konnte nicht geöffnet werden. Beende.", filePathName);
+			return 0;
+		}
+		logFile << " Zeit , DT" << std::endl; 
+		last = ros::Time::now();
+		start = ros::Time::now();
+	#endif
 
 	ros::Rate loop_rate(200);
 
@@ -109,9 +128,11 @@ int main( int argc, char * argv[] ){
 			}else{
 				srv.request.data = false;				
 			}			
-			ros::Time now = ros::Time::now();
-			ROS_INFO("dt: %f", (now - last).toSec());
-			last = now;
+			#ifdef LOGGING
+				ros::Time now = ros::Time::now();
+				logFile << (now-start).toSec() << " , " << (now - last).toSec();
+				last = now;
+			#endif
 			dynamics_client.call(srv);
       control_client.call(srv);
 		}else{
