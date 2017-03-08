@@ -12,7 +12,7 @@
 bool run = false;
 bool running = false;
 
-#define LOGGING
+// #define LOGGING
 #ifdef LOGGING
 	#include <fstream>
 	using namespace std;
@@ -105,7 +105,8 @@ int main( int argc, char * argv[] ){
 	pub_base  = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
 
 	#ifdef LOGGING
-		char filePathName[] = "/home/youbot/Desktop/logDT.txt";
+		//char filePathName[] = "/home/youbot/Desktop/logDT.txt";
+		char filePathName[] = "/home/student/Schreibtisch/logDT.txt";
 		logFile.open(filePathName); 
 		if(!logFile.is_open()){
 			ROS_ERROR("Logfile: '%s' konnte nicht geöffnet werden. Beende.", filePathName);
