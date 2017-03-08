@@ -130,7 +130,7 @@ int main( int argc, char * argv[] ){
 			}			
 			#ifdef LOGGING
 				ros::Time now = ros::Time::now();
-				logFile << (now-start).toSec() << " , " << (now - last).toSec();
+				logFile << (now-start).toSec() << " , " << (now - last).toSec() << std::endl;
 				last = now;
 			#endif
 			dynamics_client.call(srv);
