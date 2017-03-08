@@ -12,6 +12,8 @@
 bool run = false;
 bool running = false;
 
+ros::Time last;
+
 // Publisher für die Gelenkwinkel
 ros::Publisher pub_joint;
 // Publisher für die Geschwindigkeit der Plattform
@@ -93,6 +95,8 @@ int main( int argc, char * argv[] ){
 	pub_joint = nh.advertise<brics_actuator::JointPositions>("/arm_1/arm_controller/position_command", 100);
 	pub_base  = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
 
+	last = ros::Time::now();
+
 	ros::Rate loop_rate(200);
 
 	while(ros::ok())
@@ -105,6 +109,9 @@ int main( int argc, char * argv[] ){
 			}else{
 				srv.request.data = false;				
 			}			
+			ros::Time now = ros::Time::now();
+			ROS_INFO("dt: %f", (last - now).toSec());
+			last = now;
 			dynamics_client.call(srv);
       control_client.call(srv);
 		}else{
