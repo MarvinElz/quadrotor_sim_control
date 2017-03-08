@@ -110,7 +110,7 @@ int main( int argc, char * argv[] ){
 				srv.request.data = false;				
 			}			
 			ros::Time now = ros::Time::now();
-			ROS_INFO("dt: %f", (last - now).toSec());
+			ROS_INFO("dt: %f", (now - last).toSec());
 			last = now;
 			dynamics_client.call(srv);
       control_client.call(srv);
