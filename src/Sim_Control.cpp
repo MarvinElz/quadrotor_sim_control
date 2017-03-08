@@ -12,7 +12,7 @@
 bool run = false;
 bool running = false;
 
-#define LOGGING
+// #define LOGGING
 #ifdef LOGGING
 	#include <fstream>
 	using namespace std;
@@ -21,7 +21,8 @@ bool running = false;
 	ros::Time start;
 #endif
 
-
+// nominelle Schrittweite
+double sim_frqz = 200;
 
 // Publisher für die Gelenkwinkel
 ros::Publisher pub_joint;
@@ -92,6 +93,8 @@ int main( int argc, char * argv[] ){
 	ros::init(argc, argv, "Sim_Control");
 	ros::NodeHandle nh("Sim_Control");
 
+	nh.getParam("Sim_Frequenz", sim_frqz);
+
 	ROS_INFO("Starte Simulationskontrolle");
 
 	reset_client = nh.serviceClient<std_srvs::Empty>("/Dynamics/dynamics_resetPosition");
@@ -117,7 +120,7 @@ int main( int argc, char * argv[] ){
 		start = ros::Time::now();
 	#endif
 
-	ros::Rate loop_rate(200);
+	ros::Rate loop_rate(sim_frqz);
 
 	while(ros::ok())
 	{	

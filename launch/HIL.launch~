@@ -1,10 +1,12 @@
 <launch>
 	
 	<node name="Dynamics" pkg="quadrotor_dynamics" type="Dynamics" output="screen">
+		<param name="max_Schrittweite" type="double" value="0.025" />
 		<rosparam command="load" file="$(find quadrotor_dynamics)/params/params.yaml"/>
 	</node>
 
 	<node name="Controller" pkg="quadrotor_control" type="Controller" output="screen">
+		<param name="max_Schrittweite" type="double" value="0.005" />
 		<rosparam command="load" file="$(find quadrotor_control)/params/Regelparameter.yaml"/>
 		<!-- <rosparam command="load" file="$(find quadrotor_control)/params/params_ps3.yaml"/> -->
 		<rosparam command="load" file="$(find quadrotor_control)/params/params_xbox360.yaml" />
@@ -14,8 +16,10 @@
 	<node name="Interface" pkg="quadrotor_youbot_interface" type="Interface" output="screen">
 		<rosparam command="load" file="$(find quadrotor_youbot_interface)/params/params.yaml"/>
 	</node>
-	
 
-	<node name="Sim_Control" pkg="quadrotor_sim_control" type="Sim_Control" output="screen"/>
+
+	<node name="Sim_Control" pkg="quadrotor_sim_control" type="Sim_Control" output="screen">
+		<param name="Sim_Frequenz" type="double" value="200.0" />	<!-- mind. 50 -->
+	</node>
 
 </launch>
